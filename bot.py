@@ -39,6 +39,7 @@ def weighted_pick(pool, count, urgent=False):
         selected.add(random.choices(names, weights=weights, k=1)[0])
     return list(selected)
 
+# ===== COMMANDS =====
 async def cast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         return
@@ -70,6 +71,23 @@ async def cast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(msg)
 
+# ===== AUTO VO REPLIES (EXACT WORDING) =====
+async def vo24(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Urgent. Let's get it done within 24 hours. 🙏"
+    )
+
+async def vo36(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "New movie. You have 36 hours. 🙏"
+    )
+
+async def vo48(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "New movie. You have 48 hours. 🙏"
+    )
+
+# ===== WEBHOOK =====
 async def webhook_handler(request):
     data = await request.json()
     update = Update.de_json(data, app.bot)
@@ -79,7 +97,12 @@ async def webhook_handler(request):
 async def main():
     global app
     app = Application.builder().token(TOKEN).build()
+
+    # Register handlers
     app.add_handler(CommandHandler("cast", cast))
+    app.add_handler(CommandHandler("24vo", vo24))
+    app.add_handler(CommandHandler("36vo", vo36))
+    app.add_handler(CommandHandler("48vo", vo48))
 
     await app.initialize()
     await app.bot.set_webhook(WEBHOOK_URL)
